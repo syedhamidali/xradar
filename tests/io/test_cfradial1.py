@@ -120,7 +120,7 @@ def test_cfradial1_export_helper_metadata_and_indices():
 
 def test_cfradial1_export_helper_empty_sweep_info_and_time_fallback():
     empty = xr.DataTree.from_dict({"/": xr.Dataset()})
-    sweep_info = cf1_export._sweep_info_mapper(empty)
+    sweep_info = cf1_export._collect_sweep_metadata(empty)
     assert "sweep_number" in sweep_info
     assert np.isnan(sweep_info["sweep_number"].values[0])
 
@@ -142,6 +142,6 @@ def test_cfradial1_export_helper_empty_sweep_info_and_time_fallback():
         },
     )
     dtree = xr.DataTree.from_dict({"/": xr.Dataset(), "/sweep_0": sweep})
-    mapped = cf1_export._variable_mapper(dtree)
+    mapped = cf1_export._combine_sweeps(dtree)
     assert "DBZ" in mapped
     assert mapped["DBZ"].dims == ("time", "range")
